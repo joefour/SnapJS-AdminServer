@@ -5,14 +5,14 @@ A npm module for a server-side admin server
 
 Include this private module by adding the following under `dependencies` in `package.json`, and run `npm install`.
 
-    "snapmobile-adminserver": "git+ssh://git@github.com/SnapMobileIO/SnapMobile-AdminServer.git",
+    "snapjs-adminserver": "git+ssh://git@github.com/SnapMobileIO/SnapJS-AdminServer.git",
 
 To configure, add the following to `routes.js`:
 
 ```javascript
 import User from '../app/user/user.model';
 ...
-let admin = require('snapmobile-adminserver');
+let admin = require('snapjs-adminserver');
 admin.setUser(User);
 app.use('/api/admin', admin.router);
 ```
