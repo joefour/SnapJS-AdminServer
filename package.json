@@ -1,8 +1,8 @@
 {
-  "name": "snapmobile-adminserver",
+  "name": "snapjs-adminserver",
   "version": "1.0.0",
   "description": "",
-  "main": "snapmobile-adminserver.js",
+  "main": "snapjs-adminserver.js",
   "scripts": {
     "test": "mocha --recursive",
     "build": "babel server -d dist/server",
