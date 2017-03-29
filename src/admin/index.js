@@ -54,11 +54,3 @@ export function setUser(_user) {
   router.patch('/:className/:id', auth.hasRole('admin'), attachClass(), controller.update);
   router.delete('/:className/:id', auth.hasRole('admin'), attachClass(), controller.destroy);
 }
-
-/**
- * Sets the Utils class of Admin and its dependencies for reference
- * @param {Utils} _utils An instance of the Utils class
- */
-export function setUtils(_utils) {
-  controller.setUtils(_utils);
-}

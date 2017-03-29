@@ -13,8 +13,6 @@ To configure, add the following to `routes.js`:
 import User from '../app/user/user.model';
 ...
 let admin = require('snapmobile-adminserver');
-let utils = require('../components/utils');
-admin.setUtils(utils);
 admin.setUser(User);
 app.use('/api/admin', admin.router);
 ```

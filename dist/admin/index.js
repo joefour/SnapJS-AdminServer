@@ -5,7 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.router = undefined;
 exports.setUser = setUser;
-exports.setUtils = setUtils;
 
 var _express = require('express');
 
@@ -72,12 +71,4 @@ function setUser(_user) {
   router.put('/:className/:id', auth.hasRole('admin'), attachClass(), controller.update);
   router.patch('/:className/:id', auth.hasRole('admin'), attachClass(), controller.update);
   router.delete('/:className/:id', auth.hasRole('admin'), attachClass(), controller.destroy);
-}
-
-/**
- * Sets the Utils class of Admin and its dependencies for reference
- * @param {Utils} _utils An instance of the Utils class
- */
-function setUtils(_utils) {
-  controller.setUtils(_utils);
 }

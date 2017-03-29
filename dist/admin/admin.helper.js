@@ -1,16 +1,148 @@
 'use strict';
 
 /**
- * @param  {Array} result Array of objects - results from database query
- * @param  {Array} headers Schema properties
- * Converts data to CSV string
+ * Processes the result to be sent in the response
+ * Removes any blacklisted attributes before sending the JSON object
+ * @param  {Object} res                 The response object for the request
+ * @param  {Array}  blacklistAttributes Array of blacklisted attributes as strings
+ * @return {Function<Response>}         200 response with processed entity
  */
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.respondWithResult = respondWithResult;
+exports.handleEntityNotFound = handleEntityNotFound;
+exports.cleanRequest = cleanRequest;
+exports.handleError = handleError;
+exports.buildQuery = buildQuery;
 exports.convertToCsv = convertToCsv;
 exports.csvToArray = csvToArray;
+function respondWithResult(res) {
+  var blacklistAttributes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+  return function (entity) {
+    if (entity) {
+      // Remove properties from objects before sending the response
+      if (Object.prototype.toString.call(entity) !== '[object Array]') {
+        // Prevent calling toObject on an object
+        if (typeof entity.toObject === 'function') {
+          entity = entity.toObject();
+        }
+
+        for (var i = blacklistAttributes.length - 1; i >= 0; i--) {
+          if (blacklistAttributes[i] !== '_id') {
+            delete entity[blacklistAttributes[i]];
+          }
+        }
+      }
+
+      res.status(200).json(entity);
+      return null;
+    }
+  };
+}
+
+/**
+ * Handle entity not found for a request / response
+ * @param  {Object} res The response object for the request
+ * @return {Function<Object>}     The entity that was found or ends request with 404
+ */
+function handleEntityNotFound(res) {
+  return function (entity) {
+    if (!entity) {
+      res.status(404).end();
+      return;
+    }
+
+    return entity;
+  };
+}
+
+/**
+ * Removes blacklisted attributes from the request object
+ * @param  {Object} req                 The request object
+ * @param  {Array}  blacklistAttributes Array of blacklisted attributes as strings
+ * @return {Object}                     The cleaned request
+ */
+function cleanRequest(req) {
+  var blacklistAttributes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+  for (var i = blacklistAttributes.length - 1; i >= 0; i--) {
+    if (req.body[blacklistAttributes[i]]) {
+      delete req.body[blacklistAttributes[i]];
+    }
+  }
+}
+
+/**
+ * Handles errors for a request
+ * @param  {Function} next The next object from the request
+ * @return {Function}      Function to handle errors
+ */
+function handleError(next) {
+  return function (err) {
+    return next(err);
+  };
+}
+
+/**
+ * Builds query based on given search filters
+ * @param  {Array} searchFilters  Array of filter objects
+ * @return {Object} database search query
+ */
+function buildQuery(searchFilters) {
+  var searchQuery = {};
+  var OPERATOR_MAP = {
+    equals: '$eq',
+    'not equal': '$ne',
+    'greater than': '$gt',
+    'less than': '$lt',
+    'greater than or equal to': '$gte',
+    'less than or equal to': '$lte',
+    like: '$regex'
+  };
+
+  searchQuery.$and = [];
+  searchFilters.forEach(function (filter) {
+    var innerQuery = {};
+    var operator = {};
+
+    // Fuzzy search
+    if (filter.operator === 'like') {
+      operator[OPERATOR_MAP[filter.operator]] = new RegExp(filter.value, 'i');
+      innerQuery[filter.field] = operator;
+
+      // Boolean search
+    } else if (filter.field === 'active') {
+      if (filter.operator === 'true') {
+        innerQuery[filter.field] = true;
+      } else {
+        innerQuery[filter.field] = null;
+      }
+
+      // Date search
+    } else if (filter.field == 'createdAt' || filter.field == 'updatedAt') {
+      operator[OPERATOR_MAP[filter.operator]] = new Date(filter.value);
+      innerQuery[filter.field] = operator;
+
+      // Integer and string exact search
+    } else {
+      operator[OPERATOR_MAP[filter.operator]] = filter.value;
+      innerQuery[filter.field] = operator;
+    }
+
+    searchQuery.$and.push(innerQuery);
+  });
+
+  return searchQuery;
+}
+
+/**
+ * @param  {Array} result Array of objects - results from database query
+ * @param  {Array} headers Schema properties
+ * Converts data to CSV string
+ */
 function convertToCsv(result, headers) {
   var columnDelimiter = ',';
   var lineDelimiter = '\n';

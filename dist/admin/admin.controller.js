@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.setUtils = setUtils;
 exports.getSchema = getSchema;
 exports.index = index;
 exports.show = show;
@@ -34,12 +33,6 @@ var _snapmobileAws = require('snapmobile-aws');
 var _adminHelper = require('./admin.helper.js');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var utils = void 0;
-
-function setUtils(_utils) {
-  utils = _utils;
-}
 
 var blacklistRequestAttributes = ['_id', 'salt', 'resetPasswordExpires', 'resetPasswordToken', 'updatedAt', 'createdAt', '__v'];
 var blacklistResponseAttributes = ['_id', 'password', 'salt', 'resetPasswordExpires', 'resetPasswordToken', '__v'];
@@ -135,7 +128,7 @@ function index(req, res, next) {
 
     // Run the buildQuery function on any typical filters that come through
     // and concat it to any relationship filters we already found.
-    var buildQuery = utils.buildQuery(nonRelationshipFilters);
+    var buildQuery = buildQuery(nonRelationshipFilters);
     searchQuery['$and'] = searchQuery['$and'].concat(buildQuery['$and']);
 
     // $and could be blank, which causes an error
@@ -201,7 +194,7 @@ function index(req, res, next) {
         }
       });
     });
-  }).then(utils.respondWithResult(res, blacklistResponseAttributes)).catch(utils.handleError(next));
+  }).then((0, _adminHelper.respondWithResult)(res, blacklistResponseAttributes)).catch((0, _adminHelper.handleError)(next));
 }
 
 /**
@@ -216,7 +209,7 @@ function show(req, res, next) {
     populatedFields = req.class.populateForAdmin();
   }
 
-  req.class.findOne({ _id: req.params.id }).lean().populate(populatedFields).then(utils.handleEntityNotFound(res)).then(function (result) {
+  req.class.findOne({ _id: req.params.id }).lean().populate(populatedFields).then((0, _adminHelper.handleEntityNotFound)(res)).then(function (result) {
 
     // Perform any special admin functions on the document
     if (typeof req.class.populateForAdminFunctions === 'function') {
@@ -237,7 +230,7 @@ function show(req, res, next) {
     } else {
       return result;
     }
-  }).then(utils.respondWithResult(res, blacklistResponseAttributes)).catch(utils.handleError(next));
+  }).then((0, _adminHelper.respondWithResult)(res, blacklistResponseAttributes)).catch((0, _adminHelper.handleError)(next));
 }
 
 /**
@@ -246,34 +239,34 @@ function show(req, res, next) {
 function create(req, res, next) {
   req.class.create(req.body).then(function (result) {
     return result;
-  }).then(utils.respondWithResult(res, blacklistResponseAttributes)).catch(utils.handleError(next));
+  }).then((0, _adminHelper.respondWithResult)(res, blacklistResponseAttributes)).catch((0, _adminHelper.handleError)(next));
 }
 
 /**
  * Updates an existing document in the DB
  */
 function update(req, res, next) {
-  req.class.findOne({ _id: req.params.id }).then(utils.handleEntityNotFound(res)).then(utils.cleanRequest(req, blacklistRequestAttributes)).then(function (result) {
+  req.class.findOne({ _id: req.params.id }).then((0, _adminHelper.handleEntityNotFound)(res)).then((0, _adminHelper.cleanRequest)(req, blacklistRequestAttributes)).then(function (result) {
     if (req.body._id) {
       delete req.body._id;
     }
 
     var updated = _lodash2.default.assign(result, req.body);
     return updated.save();
-  }).then(utils.respondWithResult(res, blacklistResponseAttributes)).catch(utils.handleError(next));
+  }).then((0, _adminHelper.respondWithResult)(res, blacklistResponseAttributes)).catch((0, _adminHelper.handleError)(next));
 }
 
 /**
  * Deletes a document from the DB
  */
 function destroy(req, res, next) {
-  req.class.findById(req.params.id).then(utils.handleEntityNotFound(res)).then(function (result) {
+  req.class.findById(req.params.id).then((0, _adminHelper.handleEntityNotFound)(res)).then(function (result) {
     if (result) {
       return result.remove(function () {
         res.status(204).end();
       });
     }
-  }).catch(utils.handleError(next));
+  }).catch((0, _adminHelper.handleError)(next));
 }
 
 /**
@@ -290,7 +283,7 @@ function destroyMultiple(req, res, next) {
         res.status(204).end();
       });
     }
-  }).catch(utils.handleError(next));
+  }).catch((0, _adminHelper.handleError)(next));
 }
 
 /**

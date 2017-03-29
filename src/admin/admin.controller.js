@@ -5,13 +5,15 @@ import moment from 'moment';
 import Promise from 'bluebird';
 import mongoose from 'mongoose';
 import { awsHelper } from 'snapmobile-aws';
-import { convertToCsv, csvToArray } from './admin.helper.js';
-
-let utils;
-
-export function setUtils(_utils) {
-  utils = _utils;
-}
+import {
+  convertToCsv,
+  csvToArray,
+  cleanRequest,
+  respondWithResult,
+  handleEntityNotFound,
+  handleError,
+  buildQuery
+} from './admin.helper.js';
 
 const blacklistRequestAttributes = ['_id',
                                     'salt',
@@ -118,7 +120,7 @@ export function index(req, res, next) {
 
       // Run the buildQuery function on any typical filters that come through
       // and concat it to any relationship filters we already found.
-      let buildQuery = utils.buildQuery(nonRelationshipFilters);
+      let buildQuery = buildQuery(nonRelationshipFilters);
       searchQuery['$and'] = searchQuery['$and'].concat(buildQuery['$and']);
 
       // $and could be blank, which causes an error
@@ -196,8 +198,8 @@ export function index(req, res, next) {
             });
         });
     })
-    .then(utils.respondWithResult(res, blacklistResponseAttributes))
-    .catch(utils.handleError(next));
+    .then(respondWithResult(res, blacklistResponseAttributes))
+    .catch(handleError(next));
 }
 
 /**
@@ -215,7 +217,7 @@ export function show(req, res, next) {
   req.class.findOne({ _id: req.params.id })
     .lean()
     .populate(populatedFields)
-    .then(utils.handleEntityNotFound(res))
+    .then(handleEntityNotFound(res))
     .then((result) => {
 
       // Perform any special admin functions on the document
@@ -240,8 +242,8 @@ export function show(req, res, next) {
         return result;
       }
     })
-    .then(utils.respondWithResult(res, blacklistResponseAttributes))
-    .catch(utils.handleError(next));
+    .then(respondWithResult(res, blacklistResponseAttributes))
+    .catch(handleError(next));
 }
 
 /**
@@ -252,8 +254,8 @@ export function create(req, res, next) {
     .then((result) => {
       return result;
     })
-    .then(utils.respondWithResult(res, blacklistResponseAttributes))
-    .catch(utils.handleError(next));
+    .then(respondWithResult(res, blacklistResponseAttributes))
+    .catch(handleError(next));
 }
 
 /**
@@ -261,8 +263,8 @@ export function create(req, res, next) {
  */
 export function update(req, res, next) {
   req.class.findOne({ _id: req.params.id })
-    .then(utils.handleEntityNotFound(res))
-    .then(utils.cleanRequest(req, blacklistRequestAttributes))
+    .then(handleEntityNotFound(res))
+    .then(cleanRequest(req, blacklistRequestAttributes))
     .then(result => {
       if (req.body._id) {
         delete req.body._id;
@@ -271,8 +273,8 @@ export function update(req, res, next) {
       let updated = _.assign(result, req.body);
       return updated.save();
     })
-    .then(utils.respondWithResult(res, blacklistResponseAttributes))
-    .catch(utils.handleError(next));
+    .then(respondWithResult(res, blacklistResponseAttributes))
+    .catch(handleError(next));
 }
 
 /**
@@ -280,7 +282,7 @@ export function update(req, res, next) {
  */
 export function destroy(req, res, next) {
   req.class.findById(req.params.id)
-    .then(utils.handleEntityNotFound(res))
+    .then(handleEntityNotFound(res))
     .then(result => {
       if (result) {
         return result.remove(() => {
@@ -288,7 +290,7 @@ export function destroy(req, res, next) {
         });
       }
     })
-    .catch(utils.handleError(next));
+    .catch(handleError(next));
 }
 
 /**
@@ -307,7 +309,7 @@ export function destroyMultiple(req, res, next) {
         });
       }
     })
-    .catch(utils.handleError(next));
+    .catch(handleError(next));
 }
 
 /**
