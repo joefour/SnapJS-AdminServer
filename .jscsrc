@@ -1,0 +1,39 @@
+{
+  "preset": "airbnb",
+  "requireCurlyBraces":true,
+  "disallowUnusedVariables":true,
+  "requireUseStrict": true,
+  "requirePaddingNewLinesAfterUseStrict": true,
+  "requireTrailingComma": false,
+  "requireSpacesInAnonymousFunctionExpression": {
+    "beforeOpeningCurlyBrace": true
+  },
+  "disallowSpacesInAnonymousFunctionExpression": {
+    "beforeOpeningRoundBrace": true,
+  },
+  "maximumLineLength": {
+    "value": 100,
+    "allExcept": [
+      "comments",
+      "urlComments"
+    ]
+  },
+  "jsDoc": {
+    "checkAnnotations": "jsdoc3",
+    "checkTypes": "capitalizedNativeCase",
+    "checkParamNames": true,
+    "requireParamTypes": true,
+    "checkRedundantParams": true,
+    "checkReturnTypes": true,
+    "checkRedundantReturns": true,
+    "requireReturnTypes": true,
+    "leadingUnderscoreAccess": "protected",
+    "disallowNewlineAfterDescription": true,
+    "requireParamDescription": true,
+    "requireReturnDescription": true,
+  },
+  "requirePaddingNewLinesBeforeLineComments": { 
+    "allExcept": "firstAfterCurly" 
+  },
+  "requireShorthandArrowFunctions": false
+}
