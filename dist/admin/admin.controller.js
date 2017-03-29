@@ -128,8 +128,8 @@ function index(req, res, next) {
 
     // Run the buildQuery function on any typical filters that come through
     // and concat it to any relationship filters we already found.
-    var buildQuery = buildQuery(nonRelationshipFilters);
-    searchQuery['$and'] = searchQuery['$and'].concat(buildQuery['$and']);
+    var newQuery = (0, _adminHelper.buildQuery)(nonRelationshipFilters);
+    searchQuery['$and'] = searchQuery['$and'].concat(newQuery['$and']);
 
     // $and could be blank, which causes an error
     searchQuery = !searchQuery['$and'].length ? {} : searchQuery;
