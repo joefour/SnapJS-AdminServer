@@ -22,8 +22,7 @@ const blacklistRequestAttributes = ['_id',
                                     'updatedAt',
                                     'createdAt',
                                     '__v'];
-const blacklistResponseAttributes = ['_id',
-                                     'password',
+const blacklistResponseAttributes = ['password',
                                      'salt',
                                      'resetPasswordExpires',
                                      'resetPasswordToken',
@@ -120,7 +119,7 @@ export function index(req, res, next) {
 
       // Run the buildQuery function on any typical filters that come through
       // and concat it to any relationship filters we already found.
-      const newQuery = buildQuery(nonRelationshipFilters);
+      let newQuery = buildQuery(nonRelationshipFilters);
       searchQuery['$and'] = searchQuery['$and'].concat(newQuery['$and']);
 
       // $and could be blank, which causes an error
@@ -250,6 +249,10 @@ export function show(req, res, next) {
  * Creates a new document in the DB
  */
 export function create(req, res, next) {
+  if (req.body.hasOwnProperty('_id')) {
+    delete req.body['_id'];
+  }
+
   req.class.create(req.body)
     .then((result) => {
       return result;
@@ -266,8 +269,8 @@ export function update(req, res, next) {
     .then(handleEntityNotFound(res))
     .then(cleanRequest(req, blacklistRequestAttributes))
     .then(result => {
-      if (req.body._id) {
-        delete req.body._id;
+      if (req.body.hasOwnProperty('_id')) {
+        delete req.body['_id'];
       }
 
       let updated = _.assign(result, req.body);

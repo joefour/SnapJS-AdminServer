@@ -35,7 +35,7 @@ var _adminHelper = require('./admin.helper.js');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var blacklistRequestAttributes = ['_id', 'salt', 'resetPasswordExpires', 'resetPasswordToken', 'updatedAt', 'createdAt', '__v'];
-var blacklistResponseAttributes = ['_id', 'password', 'salt', 'resetPasswordExpires', 'resetPasswordToken', '__v'];
+var blacklistResponseAttributes = ['password', 'salt', 'resetPasswordExpires', 'resetPasswordToken', '__v'];
 
 /**
  * Return the mongoose schema for the class
@@ -237,6 +237,10 @@ function show(req, res, next) {
  * Creates a new document in the DB
  */
 function create(req, res, next) {
+  if (req.body.hasOwnProperty('_id')) {
+    delete req.body['_id'];
+  }
+
   req.class.create(req.body).then(function (result) {
     return result;
   }).then((0, _adminHelper.respondWithResult)(res, blacklistResponseAttributes)).catch((0, _adminHelper.handleError)(next));
@@ -247,8 +251,8 @@ function create(req, res, next) {
  */
 function update(req, res, next) {
   req.class.findOne({ _id: req.params.id }).then((0, _adminHelper.handleEntityNotFound)(res)).then((0, _adminHelper.cleanRequest)(req, blacklistRequestAttributes)).then(function (result) {
-    if (req.body._id) {
-      delete req.body._id;
+    if (req.body.hasOwnProperty('_id')) {
+      delete req.body['_id'];
     }
 
     var updated = _lodash2.default.assign(result, req.body);
