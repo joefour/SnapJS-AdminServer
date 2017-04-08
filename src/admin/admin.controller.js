@@ -253,6 +253,10 @@ export function create(req, res, next) {
     delete req.body['_id'];
   }
 
+  if (req.body.hasOwnProperty('__v')) {
+    delete req.body['__v'];
+  }
+
   req.class.create(req.body)
     .then((result) => {
       return result;
@@ -265,14 +269,18 @@ export function create(req, res, next) {
  * Updates an existing document in the DB
  */
 export function update(req, res, next) {
+  if (req.body.hasOwnProperty('_id')) {
+    delete req.body['_id'];
+  }
+
+  if (req.body.hasOwnProperty('__v')) {
+    delete req.body['__v'];
+  }
+
   req.class.findOne({ _id: req.params.id })
     .then(handleEntityNotFound(res))
     .then(cleanRequest(req, blacklistRequestAttributes))
     .then(result => {
-      if (req.body.hasOwnProperty('_id')) {
-        delete req.body['_id'];
-      }
-
       let updated = _.assign(result, req.body);
       return updated.save();
     })

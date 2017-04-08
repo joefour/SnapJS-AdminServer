@@ -241,6 +241,10 @@ function create(req, res, next) {
     delete req.body['_id'];
   }
 
+  if (req.body.hasOwnProperty('__v')) {
+    delete req.body['__v'];
+  }
+
   req.class.create(req.body).then(function (result) {
     return result;
   }).then((0, _adminHelper.respondWithResult)(res, blacklistResponseAttributes)).catch((0, _adminHelper.handleError)(next));
@@ -250,11 +254,15 @@ function create(req, res, next) {
  * Updates an existing document in the DB
  */
 function update(req, res, next) {
-  req.class.findOne({ _id: req.params.id }).then((0, _adminHelper.handleEntityNotFound)(res)).then((0, _adminHelper.cleanRequest)(req, blacklistRequestAttributes)).then(function (result) {
-    if (req.body.hasOwnProperty('_id')) {
-      delete req.body['_id'];
-    }
+  if (req.body.hasOwnProperty('_id')) {
+    delete req.body['_id'];
+  }
 
+  if (req.body.hasOwnProperty('__v')) {
+    delete req.body['__v'];
+  }
+
+  req.class.findOne({ _id: req.params.id }).then((0, _adminHelper.handleEntityNotFound)(res)).then((0, _adminHelper.cleanRequest)(req, blacklistRequestAttributes)).then(function (result) {
     var updated = _lodash2.default.assign(result, req.body);
     return updated.save();
   }).then((0, _adminHelper.respondWithResult)(res, blacklistResponseAttributes)).catch((0, _adminHelper.handleError)(next));
