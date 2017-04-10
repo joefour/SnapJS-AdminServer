@@ -1,5 +1,22 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.respondWithResult = respondWithResult;
+exports.handleEntityNotFound = handleEntityNotFound;
+exports.removeDeep = removeDeep;
+exports.handleError = handleError;
+exports.buildQuery = buildQuery;
+exports.convertToCsv = convertToCsv;
+exports.csvToArray = csvToArray;
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 /**
  * Processes the result to be sent in the response
  * Removes any blacklisted attributes before sending the JSON object
@@ -7,17 +24,6 @@
  * @param  {Array}  blacklistAttributes Array of blacklisted attributes as strings
  * @return {Function<Response>}         200 response with processed entity
  */
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.respondWithResult = respondWithResult;
-exports.handleEntityNotFound = handleEntityNotFound;
-exports.cleanRequest = cleanRequest;
-exports.handleError = handleError;
-exports.buildQuery = buildQuery;
-exports.convertToCsv = convertToCsv;
-exports.csvToArray = csvToArray;
 function respondWithResult(res) {
   var blacklistAttributes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
 
@@ -60,19 +66,22 @@ function handleEntityNotFound(res) {
 }
 
 /**
- * Removes blacklisted attributes from the request object
- * @param  {Object} req                 The request object
- * @param  {Array}  blacklistAttributes Array of blacklisted attributes as strings
- * @return {Object}                     The cleaned request
+ * Recursively removes blacklisted attributes from an object
+ * This doesn't return anything, it directly removes keys from object
+ * @param  {Object} object              The object
+ * @param  {Array}  keys                Array of keys as strings to be removed
  */
-function cleanRequest(req) {
-  var blacklistAttributes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+function removeDeep(object) {
+  var keys = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
 
-  for (var i = blacklistAttributes.length - 1; i >= 0; i--) {
-    if (req.body[blacklistAttributes[i]]) {
-      delete req.body[blacklistAttributes[i]];
+  _lodash2.default.forIn(object, function (value, key) {
+    if (_lodash2.default.isObject(value)) {
+      removeDeep(value, keys);
+    } else if (keys.indexOf(key) >= 0) {
+      var i = keys.indexOf(key);
+      delete object[keys[i]];
     }
-  }
+  });
 }
 
 /**

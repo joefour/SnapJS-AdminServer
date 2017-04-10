@@ -237,13 +237,7 @@ function show(req, res, next) {
  * Creates a new document in the DB
  */
 function create(req, res, next) {
-  if (req.body.hasOwnProperty('_id')) {
-    delete req.body['_id'];
-  }
-
-  if (req.body.hasOwnProperty('__v')) {
-    delete req.body['__v'];
-  }
+  (0, _adminHelper.removeDeep)(req.body, blacklistRequestAttributes);
 
   req.class.create(req.body).then(function (result) {
     return result;
@@ -254,15 +248,9 @@ function create(req, res, next) {
  * Updates an existing document in the DB
  */
 function update(req, res, next) {
-  if (req.body.hasOwnProperty('_id')) {
-    delete req.body['_id'];
-  }
+  (0, _adminHelper.removeDeep)(req.body, blacklistRequestAttributes);
 
-  if (req.body.hasOwnProperty('__v')) {
-    delete req.body['__v'];
-  }
-
-  req.class.findOne({ _id: req.params.id }).then((0, _adminHelper.handleEntityNotFound)(res)).then((0, _adminHelper.cleanRequest)(req, blacklistRequestAttributes)).then(function (result) {
+  req.class.findOne({ _id: req.params.id }).then((0, _adminHelper.handleEntityNotFound)(res)).then(function (result) {
     var updated = _lodash2.default.assign(result, req.body);
     return updated.save();
   }).then((0, _adminHelper.respondWithResult)(res, blacklistResponseAttributes)).catch((0, _adminHelper.handleError)(next));

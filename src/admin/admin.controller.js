@@ -8,11 +8,11 @@ import { awsHelper } from 'snapmobile-aws';
 import {
   convertToCsv,
   csvToArray,
-  cleanRequest,
   respondWithResult,
   handleEntityNotFound,
   handleError,
-  buildQuery
+  buildQuery,
+  removeDeep,
 } from './admin.helper.js';
 
 const blacklistRequestAttributes = ['_id',
@@ -249,13 +249,7 @@ export function show(req, res, next) {
  * Creates a new document in the DB
  */
 export function create(req, res, next) {
-  if (req.body.hasOwnProperty('_id')) {
-    delete req.body['_id'];
-  }
-
-  if (req.body.hasOwnProperty('__v')) {
-    delete req.body['__v'];
-  }
+  removeDeep(req.body, blacklistRequestAttributes);
 
   req.class.create(req.body)
     .then((result) => {
@@ -269,17 +263,10 @@ export function create(req, res, next) {
  * Updates an existing document in the DB
  */
 export function update(req, res, next) {
-  if (req.body.hasOwnProperty('_id')) {
-    delete req.body['_id'];
-  }
-
-  if (req.body.hasOwnProperty('__v')) {
-    delete req.body['__v'];
-  }
+  removeDeep(req.body, blacklistRequestAttributes);
 
   req.class.findOne({ _id: req.params.id })
     .then(handleEntityNotFound(res))
-    .then(cleanRequest(req, blacklistRequestAttributes))
     .then(result => {
       let updated = _.assign(result, req.body);
       return updated.save();
