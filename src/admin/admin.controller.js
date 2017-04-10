@@ -13,6 +13,7 @@ import {
   handleError,
   buildQuery,
   removeDeep,
+  convertKeysToObjects,
 } from './admin.helper.js';
 
 const blacklistRequestAttributes = ['_id',
@@ -251,6 +252,8 @@ export function show(req, res, next) {
 export function create(req, res, next) {
   removeDeep(req.body, blacklistRequestAttributes);
 
+  convertKeysToObjects(req.body);
+
   req.class.create(req.body)
     .then((result) => {
       return result;
@@ -264,6 +267,8 @@ export function create(req, res, next) {
  */
 export function update(req, res, next) {
   removeDeep(req.body, blacklistRequestAttributes);
+
+  convertKeysToObjects(req.body);
 
   req.class.findOne({ _id: req.params.id })
     .then(handleEntityNotFound(res))

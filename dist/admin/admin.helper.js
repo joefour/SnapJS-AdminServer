@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.respondWithResult = respondWithResult;
 exports.handleEntityNotFound = handleEntityNotFound;
 exports.removeDeep = removeDeep;
+exports.convertKeysToObjects = convertKeysToObjects;
 exports.handleError = handleError;
 exports.buildQuery = buildQuery;
 exports.convertToCsv = convertToCsv;
@@ -80,6 +81,27 @@ function removeDeep(object) {
     } else if (keys.indexOf(key) >= 0) {
       var i = keys.indexOf(key);
       delete object[keys[i]];
+    }
+  });
+}
+
+/**
+ * Converts any keys that include a '.' to objects
+ * This happens when a schema uses a custom object. For example, address: { street, city, state, zipcode }
+ * would get sent as params of: 'address.street', 'address.city', 'address.state', 'address.zipcode'
+ * This doesn't return anything, it directly mutates the objects
+ * @param  {Object} object The object (most likely req.body)
+ */
+function convertKeysToObjects(object) {
+  _lodash2.default.forIn(object, function (value, key) {
+    if (key.indexOf('.') >= 0) {
+      var array = key.split('.');
+
+      if (!object[array[0]]) {
+        object[array[0]] = {};
+      };
+
+      object[array[0]][array[1]] = value;
     }
   });
 }

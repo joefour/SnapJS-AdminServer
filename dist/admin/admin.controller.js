@@ -239,6 +239,8 @@ function show(req, res, next) {
 function create(req, res, next) {
   (0, _adminHelper.removeDeep)(req.body, blacklistRequestAttributes);
 
+  (0, _adminHelper.convertKeysToObjects)(req.body);
+
   req.class.create(req.body).then(function (result) {
     return result;
   }).then((0, _adminHelper.respondWithResult)(res, blacklistResponseAttributes)).catch((0, _adminHelper.handleError)(next));
@@ -249,6 +251,8 @@ function create(req, res, next) {
  */
 function update(req, res, next) {
   (0, _adminHelper.removeDeep)(req.body, blacklistRequestAttributes);
+
+  (0, _adminHelper.convertKeysToObjects)(req.body);
 
   req.class.findOne({ _id: req.params.id }).then((0, _adminHelper.handleEntityNotFound)(res)).then(function (result) {
     var updated = _lodash2.default.assign(result, req.body);

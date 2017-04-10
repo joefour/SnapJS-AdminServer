@@ -66,6 +66,27 @@ export function removeDeep(object, keys = []) {
 }
 
 /**
+ * Converts any keys that include a '.' to objects
+ * This happens when a schema uses a custom object. For example, address: { street, city, state, zipcode }
+ * would get sent as params of: 'address.street', 'address.city', 'address.state', 'address.zipcode'
+ * This doesn't return anything, it directly mutates the objects
+ * @param  {Object} object The object (most likely req.body)
+ */
+export function convertKeysToObjects(object) {
+  _.forIn(object, (value, key) => {
+    if (key.indexOf('.') >= 0) {
+      const array = key.split('.');
+
+      if (!object[array[0]]) {
+        object[array[0]] = {}
+      };
+
+      object[array[0]][array[1]] = value;
+    }
+  });
+}
+
+/**
  * Handles errors for a request
  * @param  {Function} next The next object from the request
  * @return {Function}      Function to handle errors
