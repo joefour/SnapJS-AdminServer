@@ -145,12 +145,10 @@ function buildQuery(searchFilters) {
       innerQuery[filter.field] = operator;
 
       // Boolean search
-    } else if (filter.field === 'active') {
-      if (filter.operator === 'true') {
-        innerQuery[filter.field] = true;
-      } else {
-        innerQuery[filter.field] = null;
-      }
+    } else if (filter.operator === 'true') {
+      innerQuery[filter.field] = true;
+    } else if (filter.operator === 'false') {
+      innerQuery[filter.field] = false;
 
       // Date search
     } else if (filter.field == 'createdAt' || filter.field == 'updatedAt') {
