@@ -1,5 +1,6 @@
 'use strict';
 
+import moment from 'moment';
 import _ from 'lodash';
 
 /**
@@ -176,9 +177,13 @@ export function convertToCsv(result, headers) {
                  result[i][headers[x]].constructor === Object)) {
 
         // Stringify any objects that are in the db
-
+        // Single quotes and hanging quotes will break CSV, replace with ""
         jsonString = JSON.stringify(result[i][headers[x]]);
-        convertedString += `"${String(jsonString).replace(/\"/g, '""')}"`;
+        convertedString += `"${String(jsonString).replace(/\"/g, '""').replace(/'/g, '""').replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '""$2"": ')}"`;
+
+      // Dates should be converted to a better format
+      } else if (result[i][headers[x]].constructor === Date) {
+        convertedString += moment.utc(result[i][headers[x]]).format('YYYY-MM-DD HH:mm:ss');
 
       // Double quotes and hanging quotes will break our CSV, replace with "" will fix it
       } else {
@@ -189,7 +194,7 @@ export function convertToCsv(result, headers) {
     convertedString += lineDelimiter;
   }
 
-  return convertedString.replace(/'/g, '""').replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '""$2"": ');
+  return convertedString;
 }
 
 /**
