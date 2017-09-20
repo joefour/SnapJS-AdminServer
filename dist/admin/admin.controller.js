@@ -69,6 +69,12 @@ function index(req, res, next) {
     populatedFields = req.class.populateForAdmin();
   }
 
+  // Don't limit or skip if exporting to CSV
+  if (shouldExport) {
+    limit = null;
+    skip = null;
+  }
+
   // We need to find any relationships that come through.
   // They will look like "_user.firstName" and we try and split fields in our filter.
   // Any that aren't relationships, we add to a separate array to run our .buildQuery()

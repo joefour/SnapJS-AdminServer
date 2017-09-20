@@ -12,6 +12,10 @@ exports.buildQuery = buildQuery;
 exports.convertToCsv = convertToCsv;
 exports.csvToArray = csvToArray;
 
+var _moment = require('moment');
+
+var _moment2 = _interopRequireDefault(_moment);
+
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
@@ -197,9 +201,13 @@ function convertToCsv(result, headers) {
       } else if (!!result[i][headers[x]] && (result[i][headers[x]].constructor === Array || result[i][headers[x]].constructor === Object)) {
 
         // Stringify any objects that are in the db
-
+        // Single quotes and hanging quotes will break CSV, replace with ""
         jsonString = JSON.stringify(result[i][headers[x]]);
-        convertedString += '"' + String(jsonString).replace(/\"/g, '""') + '"';
+        convertedString += '"' + String(jsonString).replace(/\"/g, '""').replace(/'/g, '""').replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '""$2"": ') + '"';
+
+        // Dates should be converted to a better format
+      } else if (result[i][headers[x]].constructor === Date) {
+        convertedString += _moment2.default.utc(result[i][headers[x]]).format('YYYY-MM-DD HH:mm:ss');
 
         // Double quotes and hanging quotes will break our CSV, replace with "" will fix it
       } else {
@@ -210,7 +218,7 @@ function convertToCsv(result, headers) {
     convertedString += lineDelimiter;
   }
 
-  return convertedString.replace(/'/g, '""').replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '""$2"": ');
+  return convertedString;
 }
 
 /**
