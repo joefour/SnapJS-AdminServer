@@ -16,6 +16,10 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
+var _crypto = require('crypto');
+
+var _crypto2 = _interopRequireDefault(_crypto);
+
 var _moment = require('moment');
 
 var _moment2 = _interopRequireDefault(_moment);
@@ -357,6 +361,11 @@ function importFromCsv(req, res, next) {
         }
 
         object[csvHeaders[j]] = element;
+      }
+
+      // Because password is required for a User, we create a random secure password
+      if (req.class.modelName === 'User' && !object.password) {
+        object.password = _crypto2.default.randomBytes(16).toString('hex');
       }
 
       createWithRow(req, object, _i2, function (result, row) {
