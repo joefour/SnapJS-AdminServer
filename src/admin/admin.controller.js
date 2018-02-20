@@ -1,6 +1,7 @@
 'use strict';
 
 import _ from 'lodash';
+import crypto from 'crypto';
 import moment from 'moment';
 import Promise from 'bluebird';
 import mongoose from 'mongoose';
@@ -389,6 +390,11 @@ export function importFromCsv(req, res, next) {
         }
 
         object[csvHeaders[j]] = element;
+      }
+
+      // Because password is required for a User, we create a random secure password
+      if (req.class.modelName === 'User' && !object.password) {
+        object.password = crypto.randomBytes(16).toString('hex');
       }
 
       createWithRow(req, object, i, (result, row) => {
