@@ -93,7 +93,10 @@ export function convertKeysToObjects(object) {
  * @return {Function}      Function to handle errors
  */
 export function handleError(next) {
-  return err => next(err);
+  return err => {
+    console.log("**** err",err)
+    return next(err)
+  };
 }
 
 /**

@@ -117,6 +117,7 @@ function convertKeysToObjects(object) {
  */
 function handleError(next) {
   return function (err) {
+    console.log("**** err", err);
     return next(err);
   };
 }

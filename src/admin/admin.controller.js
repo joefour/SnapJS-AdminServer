@@ -253,10 +253,7 @@ export function show(req, res, next) {
       }
     })
     .then(respondWithResult(res, blacklistResponseAttributes))
-    .catch(err=> {
-      console.log("*** show err",err)
-      handleError(next)
-    });
+    .catch(handleError(next));
 }
 
 /**
@@ -272,10 +269,7 @@ export function create(req, res, next) {
       return result;
     })
     .then(respondWithResult(res, blacklistResponseAttributes))
-    .catch(err=> {
-      console.log("*** create err",err)
-      handleError(next)
-    });
+    .catch(handleError(next));
 }
 
 /**
@@ -293,10 +287,7 @@ export function update(req, res, next) {
       return updated.save();
     })
     .then(respondWithResult(res, blacklistResponseAttributes))
-    .catch(err=> {
-      console.log("*** update err",err)
-      handleError(next)
-    });
+    .catch(handleError(next));
 }
 
 /**
@@ -312,10 +303,7 @@ export function destroy(req, res, next) {
         });
       }
     })
-    .catch(err=> {
-      console.log("*** destroy err",err)
-      handleError(next)
-    });
+    .catch(handleError(next));
 }
 
 /**
@@ -334,10 +322,7 @@ export function destroyMultiple(req, res, next) {
         });
       }
     })
-    .catch(err=> {
-      console.log("*** destroyMultiple err",err)
-      handleError(next)
-    });
+    .catch(handleError(next));
 }
 
 /**
