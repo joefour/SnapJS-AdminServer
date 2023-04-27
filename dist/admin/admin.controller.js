@@ -204,7 +204,10 @@ function index(req, res, next) {
         }
       });
     });
-  }).then((0, _adminHelper.respondWithResult)(res, blacklistResponseAttributes)).catch((0, _adminHelper.handleError)(next));
+  }).then((0, _adminHelper.respondWithResult)(res, blacklistResponseAttributes)).catch(function (err) {
+    console.log("*** index err", err);
+    (0, _adminHelper.handleError)(next);
+  });
 }
 
 /**
@@ -240,7 +243,10 @@ function show(req, res, next) {
     } else {
       return result;
     }
-  }).then((0, _adminHelper.respondWithResult)(res, blacklistResponseAttributes)).catch((0, _adminHelper.handleError)(next));
+  }).then((0, _adminHelper.respondWithResult)(res, blacklistResponseAttributes)).catch(function (err) {
+    console.log("*** show err", err);
+    (0, _adminHelper.handleError)(next);
+  });
 }
 
 /**
@@ -253,7 +259,10 @@ function create(req, res, next) {
 
   req.class.create(req.body).then(function (result) {
     return result;
-  }).then((0, _adminHelper.respondWithResult)(res, blacklistResponseAttributes)).catch((0, _adminHelper.handleError)(next));
+  }).then((0, _adminHelper.respondWithResult)(res, blacklistResponseAttributes)).catch(function (err) {
+    console.log("*** create err", err);
+    (0, _adminHelper.handleError)(next);
+  });
 }
 
 /**
@@ -267,7 +276,10 @@ function update(req, res, next) {
   req.class.findOne({ _id: req.params.id }).then((0, _adminHelper.handleEntityNotFound)(res)).then(function (result) {
     var updated = _lodash2.default.assign(result, req.body);
     return updated.save();
-  }).then((0, _adminHelper.respondWithResult)(res, blacklistResponseAttributes)).catch((0, _adminHelper.handleError)(next));
+  }).then((0, _adminHelper.respondWithResult)(res, blacklistResponseAttributes)).catch(function (err) {
+    console.log("*** update err", err);
+    (0, _adminHelper.handleError)(next);
+  });
 }
 
 /**
@@ -280,7 +292,10 @@ function destroy(req, res, next) {
         res.status(204).end();
       });
     }
-  }).catch((0, _adminHelper.handleError)(next));
+  }).catch(function (err) {
+    console.log("*** destroy err", err);
+    (0, _adminHelper.handleError)(next);
+  });
 }
 
 /**
@@ -297,7 +312,10 @@ function destroyMultiple(req, res, next) {
         res.status(204).end();
       });
     }
-  }).catch((0, _adminHelper.handleError)(next));
+  }).catch(function (err) {
+    console.log("*** destroyMultiple err", err);
+    (0, _adminHelper.handleError)(next);
+  });
 }
 
 /**

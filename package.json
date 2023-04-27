@@ -27,7 +27,7 @@
     "chai-http": "^2.0.1",
     "del": "^2.2.0",
     "font-awesome": "^4.6.1",
-    "gulp": "^3.9.1",
+    "gulp": "3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-connect": "^3.2.2",
     "gulp-cssimport": "^3.0.2",
@@ -40,5 +40,8 @@
     "gulp-util": "^3.0.7",
     "jscs": "^3.0.3",
     "mocha": "^2.5.2"
+  },
+  "overrides": {
+    "graceful-fs": "4.2.10"
   }
 }
