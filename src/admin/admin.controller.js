@@ -294,15 +294,15 @@ export function update(req, res, next) {
  * Deletes a document from the DB
  */
 export function destroy(req, res, next) {
-  req.class.findById(req.params.id)
+  req.class.findOneAndDelete(req.params.id)
     .then(handleEntityNotFound(res))
-    .then(result => {
-      if (result) {
-        return result.remove(() => {
-          res.status(204).end();
-        });
-      }
-    })
+    // .then(result => {
+    //   if (result) {
+    //     return result.remove(() => {
+    //       res.status(204).end();
+    //     });
+    //   }
+    // })
     .catch(handleError(next));
 }
 
@@ -310,18 +310,18 @@ export function destroy(req, res, next) {
  * Deletes multiple documents from the DB
  */
 export function destroyMultiple(req, res, next) {
-  req.class.find({ _id: { $in: req.body.ids } })
-    .then(results => {
-      if (results) {
-        let promiseArray = results.map((result) => {
-          return result.remove();
-        });
+  req.class.deleteMany({ _id: { $in: req.body.ids } })
+    // .then(results => {
+    //   if (results) {
+    //     let promiseArray = results.map((result) => {
+    //       return result.remove();
+    //     });
 
-        return Promise.each(promiseArray, (result) => {
-          res.status(204).end();
-        });
-      }
-    })
+    //     return Promise.each(promiseArray, (result) => {
+    //       res.status(204).end();
+    //     });
+    //   }
+    // })
     .catch(handleError(next));
 }
 
