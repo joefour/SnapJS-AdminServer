@@ -277,30 +277,34 @@ function update(req, res, next) {
  * Deletes a document from the DB
  */
 function destroy(req, res, next) {
-  req.class.findById(req.params.id).then((0, _adminHelper.handleEntityNotFound)(res)).then(function (result) {
-    if (result) {
-      return result.remove(function () {
-        res.status(204).end();
-      });
-    }
-  }).catch((0, _adminHelper.handleError)(next));
+  req.class.findOneAndDelete(req.params.id).then((0, _adminHelper.handleEntityNotFound)(res))
+  // .then(result => {
+  //   if (result) {
+  //     return result.remove(() => {
+  //       res.status(204).end();
+  //     });
+  //   }
+  // })
+  .catch((0, _adminHelper.handleError)(next));
 }
 
 /**
  * Deletes multiple documents from the DB
  */
 function destroyMultiple(req, res, next) {
-  req.class.find({ _id: { $in: req.body.ids } }).then(function (results) {
-    if (results) {
-      var promiseArray = results.map(function (result) {
-        return result.remove();
-      });
+  req.class.deleteMany({ _id: { $in: req.body.ids } })
+  // .then(results => {
+  //   if (results) {
+  //     let promiseArray = results.map((result) => {
+  //       return result.remove();
+  //     });
 
-      return _bluebird2.default.each(promiseArray, function (result) {
-        res.status(204).end();
-      });
-    }
-  }).catch((0, _adminHelper.handleError)(next));
+  //     return Promise.each(promiseArray, (result) => {
+  //       res.status(204).end();
+  //     });
+  //   }
+  // })
+  .catch((0, _adminHelper.handleError)(next));
 }
 
 /**
