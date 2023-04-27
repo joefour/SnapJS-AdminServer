@@ -296,6 +296,9 @@ export function update(req, res, next) {
 export function destroy(req, res, next) {
   req.class.findOneAndDelete(req.params.id)
     .then(handleEntityNotFound(res))
+    .then(()=> {
+      res.status(204).end();
+    })
     // .then(result => {
     //   if (result) {
     //     return result.remove(() => {
@@ -311,6 +314,9 @@ export function destroy(req, res, next) {
  */
 export function destroyMultiple(req, res, next) {
   req.class.deleteMany({ _id: { $in: req.body.ids } })
+  .then(() => {
+    res.status(204).end();
+  })
     // .then(results => {
     //   if (results) {
     //     let promiseArray = results.map((result) => {

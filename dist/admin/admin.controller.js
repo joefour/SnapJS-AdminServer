@@ -277,7 +277,9 @@ function update(req, res, next) {
  * Deletes a document from the DB
  */
 function destroy(req, res, next) {
-  req.class.findOneAndDelete(req.params.id).then((0, _adminHelper.handleEntityNotFound)(res))
+  req.class.findOneAndDelete(req.params.id).then((0, _adminHelper.handleEntityNotFound)(res)).then(function () {
+    res.status(204).end();
+  })
   // .then(result => {
   //   if (result) {
   //     return result.remove(() => {
@@ -292,7 +294,9 @@ function destroy(req, res, next) {
  * Deletes multiple documents from the DB
  */
 function destroyMultiple(req, res, next) {
-  req.class.deleteMany({ _id: { $in: req.body.ids } })
+  req.class.deleteMany({ _id: { $in: req.body.ids } }).then(function () {
+    res.status(204).end();
+  })
   // .then(results => {
   //   if (results) {
   //     let promiseArray = results.map((result) => {
